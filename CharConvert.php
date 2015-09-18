@@ -15,6 +15,8 @@ class CharConvert {
 	public static function forceStdAscii($str) {
 		if ( is_null($str) || ! is_string($str) ) { return $str; }
 
+		// $str = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $str);
+
 		$str = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $str);
 
 		///  Scrubbing
@@ -58,7 +60,7 @@ class CharConvert {
 			array( '/\x{'. dechex(8217) .'}/u', "'"   ),
 
 			/// finally remove all non-low-ascii values remaining
-			array('/[^\x0d\x20-\x7E]/',         ''    ),
+			array('/[^\n\x20-\x7E]/',           ''    ),
 			);
 		foreach ( $find_replace_patterns as $pat ) {
 			$new_val = preg_replace($pat[0], $pat[1], $str);
