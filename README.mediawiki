@@ -1,0 +1,11 @@
+===  Just get rid of the funny characters... ===
+
+<pre>
+/// If you are dealing with an old crappy system that can't even handle Extended ASCII
+
+$str = 'Test: ';
+$str .= ' ä'; // UTF-8 multi-byte a, with the umlaut double-dot above
+$str .= ' €'; // Euro symbol
+
+$simple_string = CharConvert::forceStdAscii($str); // Outputs: Test a EUR
+</pre>
