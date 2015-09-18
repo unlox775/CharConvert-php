@@ -7,5 +7,5 @@ $str = 'Test: ';
 $str .= ' ä'; // UTF-8 multi-byte a, with the umlaut double-dot above
 $str .= ' €'; // Euro symbol
 
-$simple_string = CharConvert::forceStdAscii($str); // Outputs: Test a EUR
+$simple_string = CharConvert::forceStdAscii($str); // Outputs: Test: a EUR
 </pre>
