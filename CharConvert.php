@@ -64,7 +64,6 @@ class CharConvert {
 			);
 		foreach ( $find_replace_patterns as $pat ) {
 			$new_val = preg_replace($pat[0], $pat[1], $str);
-			if ($new_val != $str ) error_log("forceStdAscii Worked: before=[$str] after=[$new_val]");
 			///  In case of Regex errors ( Because of Unicode )
 			if ( ! is_null( $new_val ) ) $str = $new_val;
 			else {
