@@ -11,13 +11,30 @@
  ********************/
 
 class CharConvert {
+	public static $convert_from_charsets = array(
+		'UTF-8',
+		'windows-1250' // Latin 2 / Central European
+		);
 
 	public static function forceStdAscii($str) {
+		$original_strlen = strlen($str);
+
 		if ( is_null($str) || ! is_string($str) ) { return $str; }
+		if ( ! preg_match('/[\x7f-\xff]/', $str) ) { return $str; }
 
-		// $str = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $str);
+		///  Try multiple encodings until we are clean
+		foreach ( self::$convert_from_charsets as $in_charset ) {
+			self::$__warningsTrapped = array();
+			set_error_handler([__CLASS__,'trapWarnings']);
+			// $try_str = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $str);
+			$try_str = iconv($in_charset, "ISO-8859-1//TRANSLIT", $str);
+			restore_error_handler();
 
-		$str = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $str);
+			if ( $original_strlen != 0 && strlen($try_str) ) { $str = $try_str; }
+
+			///  If only ascii remains, skip out
+			if ( ! preg_match('/[^\n\x20-\x7E]/',$str) ) { break; }
+		}
 
 		///  Scrubbing
 		$find_replace_patterns = array(
@@ -74,6 +91,29 @@ class CharConvert {
 		}
 
 		return $str;
+	}
+
+	public static $__warningsTrapped = array();
+	public static function trapWarnings($errno, $errstr, $errfile, $errline) {
+		$code_map = array(
+			E_WARNING              => 'Warning',
+			E_NOTICE               => 'Notice',
+			E_CORE_WARNING         => 'CoreWarning',
+			E_COMPILE_WARNING      => 'CoreWarning',
+			E_USER_WARNING         => 'UserWarning',
+			E_USER_NOTICE          => 'UserNotice',
+			E_STRICT               => 'Strict',
+			E_DEPRECATED           => 'Deprecated',
+			E_USER_DEPRECATED      => 'UserDeprecated',
+			E_ERROR                => 'Error',
+			E_PARSE                => 'Parse',
+			E_CORE_ERROR           => 'CoreError',
+			E_COMPILE_ERROR        => 'CompileError',
+			E_USER_ERROR           => 'UserError',
+			E_RECOVERABLE_ERROR    => 'RecoverableError',
+			);
+		self::$__warningsTrapped[] = "PHP ". $code_map[$errno] ." error: ". $errstr ." in ". $errfile ." on line ". $errline;
+		return true; // don't continue regular error
 	}
 
 }
