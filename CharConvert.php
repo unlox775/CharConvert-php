@@ -13,7 +13,7 @@
 class CharConvert {
 	public static $convert_from_charsets = array(
 		'UTF-8',
-		'windows-1250' // Latin 2 / Central European
+		'windows-1250', // Latin 2 / Central European
 		);
 
 	public static function forceStdAscii($str) {
@@ -30,9 +30,9 @@ class CharConvert {
 			$try_str = iconv($in_charset, "ISO-8859-1//TRANSLIT", $str);
 			restore_error_handler();
 
-			if ( $original_strlen != 0 && strlen($try_str) ) { $str = $try_str; }
+			if ( $original_strlen == 0 || strlen($try_str) != 0 ) { $str = $try_str; }
 
-			///  If only ascii remains, skip out
+			///  If only low-ascii remains, skip out
 			if ( ! preg_match('/[^\n\x20-\x7E]/',$str) ) { break; }
 		}
 
